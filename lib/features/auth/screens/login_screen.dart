@@ -1,154 +1,115 @@
 import 'package:flutter/material.dart';
 
-class LoginScreen extends StatelessWidget {
+import '../../../core/widgets/app_text_field.dart';
+import '../../../core/widgets/primary_button.dart';
+
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final TextEditingController phoneController = TextEditingController();
+
+  final TextEditingController passwordController =
+      TextEditingController();
+
+  @override
+  void dispose() {
+    phoneController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Column(
-            children: [
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Column(
+              children: [
 
-              const Spacer(),
-
-              const Icon(
-                Icons.multitrack_audio,
-                size: 90,
-                color: Color(0xff6C4DFF),
-              ),
-
-              const SizedBox(height: 20),
-
-              const Text(
-                "EyLive",
-                style: TextStyle(
-                  fontSize: 38,
-                  fontWeight: FontWeight.bold,
+                const Icon(
+                  Icons.multitrack_audio,
+                  size: 90,
+                  color: Color(0xff6C4DFF),
                 ),
-              ),
 
-              const SizedBox(height: 8),
+                const SizedBox(height: 20),
 
-              Text(
-                "Live Your Voice",
-                style: TextStyle(
-                  color: Colors.grey.shade400,
-                  fontSize: 16,
-                ),
-              ),
-
-              const SizedBox(height: 60),
-
-              TextField(
-                decoration: InputDecoration(
-                  hintText: "Telefon",
-                  prefixIcon: const Icon(Icons.phone),
-                  filled: true,
-                  fillColor: const Color(0xff1B1F2A),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
-                    borderSide: BorderSide.none,
+                const Text(
+                  "EyLive",
+                  style: TextStyle(
+                    fontSize: 36,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-              ),
 
-              const SizedBox(height: 16),
+                const SizedBox(height: 8),
 
-              TextField(
-                obscureText: true,
-                decoration: InputDecoration(
-                  hintText: "Şifre",
-                  prefixIcon: const Icon(Icons.lock),
-                  filled: true,
-                  fillColor: const Color(0xff1B1F2A),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
-                    borderSide: BorderSide.none,
+                const Text(
+                  "Live Your Voice",
+                  style: TextStyle(
+                    color: Colors.grey,
                   ),
                 ),
-              ),
 
-              const SizedBox(height: 28),
+                const SizedBox(height: 40),
 
-              SizedBox(
-                width: double.infinity,
-                height: 55,
-                child: ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xff6C4DFF),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                  ),
+                AppTextField(
+                  controller: phoneController,
+                  hint: "Telefon Numarası",
+                  icon: Icons.phone_android,
+                  keyboardType: TextInputType.phone,
+                ),
+
+                const SizedBox(height: 18),
+
+                AppTextField(
+                  controller: passwordController,
+                  hint: "Şifre",
+                  icon: Icons.lock_outline,
+                  obscureText: true,
+                ),
+
+                const SizedBox(height: 28),
+
+                PrimaryButton(
+                  text: "Giriş Yap",
+                  icon: Icons.login,
+                  onPressed: () {
+                    // API bağlantısı burada yapılacak.
+                  },
+                ),
+
+                const SizedBox(height: 16),
+
+                TextButton(
+                  onPressed: () {
+                    // Register ekranına yönlendirilecek.
+                  },
                   child: const Text(
-                    "Giriş Yap",
-                    style: TextStyle(
-                      fontSize: 17,
-                    ),
+                    "Hesabın yok mu? Kayıt Ol",
                   ),
                 ),
-              ),
 
-              const SizedBox(height: 24),
-
-              Row(
-                children: [
-                  Expanded(child: Divider(color: Colors.grey.shade700)),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: Text(
-                      "veya",
-                      style: TextStyle(color: Colors.grey.shade500),
-                    ),
+                TextButton(
+                  onPressed: () {
+                    // Şifremi unuttum ekranı.
+                  },
+                  child: const Text(
+                    "Şifremi Unuttum",
                   ),
-                  Expanded(child: Divider(color: Colors.grey.shade700)),
-                ],
-              ),
-
-              const SizedBox(height: 24),
-
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-
-                  _social(Icons.g_mobiledata),
-
-                  _social(Icons.apple),
-
-                  _social(Icons.facebook),
-
-                ],
-              ),
-
-              const SizedBox(height: 40),
-
-              TextButton(
-                onPressed: () {},
-                child: const Text("Hesabın yok mu? Kayıt Ol"),
-              ),
-
-              const Spacer(),
-
-            ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
-    );
-  }
-
-  Widget _social(IconData icon) {
-    return Container(
-      width: 65,
-      height: 65,
-      decoration: BoxDecoration(
-        color: const Color(0xff1B1F2A),
-        borderRadius: BorderRadius.circular(18),
-      ),
-      child: Icon(icon, size: 34),
     );
   }
 }

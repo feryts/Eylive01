@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../shared/main_navigation.dart';
+import '../services/auth_service.dart';
 import '../../../core/widgets/app_text_field.dart';
 import '../../../core/widgets/primary_button.dart';
 
@@ -11,10 +13,12 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController phoneController = TextEditingController();
 
-  final TextEditingController passwordController =
-      TextEditingController();
+  final phoneController = TextEditingController();
+
+  final passwordController = TextEditingController();
+
+  bool loading = false;
 
   @override
   void dispose() {
@@ -23,14 +27,71 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
+  Future<void> login() async {
+
+    if (loading) return;
+
+    setState(() {
+      loading = true;
+    });
+
+    try {
+
+      await AuthService.instance.login(
+        phone: phoneController.text.trim(),
+        password: passwordController.text,
+      );
+
+      if (!mounted) return;
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => const MainNavigation(),
+        ),
+      );
+
+    } catch (e) {
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+
+        SnackBar(
+          content: Text(
+            e.toString(),
+          ),
+        ),
+
+      );
+
+    }
+
+    if (mounted) {
+
+      setState(() {
+        loading = false;
+      });
+
+    }
+
+  }
+
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
+
       body: SafeArea(
+
         child: Center(
+
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
+
+            padding: const EdgeInsets.all(24),
+
             child: Column(
+
               children: [
 
                 const Icon(
@@ -49,21 +110,12 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 8),
-
-                const Text(
-                  "Live Your Voice",
-                  style: TextStyle(
-                    color: Colors.grey,
-                  ),
-                ),
-
                 const SizedBox(height: 40),
 
                 AppTextField(
                   controller: phoneController,
-                  hint: "Telefon Numarası",
-                  icon: Icons.phone_android,
+                  hint: "Telefon",
+                  icon: Icons.phone,
                   keyboardType: TextInputType.phone,
                 ),
 
@@ -72,7 +124,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 AppTextField(
                   controller: passwordController,
                   hint: "Şifre",
-                  icon: Icons.lock_outline,
+                  icon: Icons.lock,
                   obscureText: true,
                 ),
 
@@ -80,36 +132,36 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 PrimaryButton(
                   text: "Giriş Yap",
+                  loading: loading,
                   icon: Icons.login,
-                  onPressed: () {
-                    // API bağlantısı burada yapılacak.
-                  },
+                  onPressed: login,
                 ),
 
-                const SizedBox(height: 16),
+                const SizedBox(height: 18),
 
                 TextButton(
                   onPressed: () {
-                    // Register ekranına yönlendirilecek.
+
+                    // Register Screen
+
                   },
                   child: const Text(
                     "Hesabın yok mu? Kayıt Ol",
                   ),
                 ),
 
-                TextButton(
-                  onPressed: () {
-                    // Şifremi unuttum ekranı.
-                  },
-                  child: const Text(
-                    "Şifremi Unuttum",
-                  ),
-                ),
               ],
+
             ),
+
           ),
+
         ),
+
       ),
+
     );
+
   }
+
 }

@@ -14,9 +14,9 @@ class MainNavigation extends StatefulWidget {
 }
 
 class _MainNavigationState extends State<MainNavigation> {
-  int index = 0;
+  int _currentIndex = 0;
 
-  final pages = const [
+  final List<Widget> _pages = const [
     HomeScreen(),
     FeedScreen(),
     RoomsScreen(),
@@ -27,15 +27,23 @@ class _MainNavigationState extends State<MainNavigation> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: pages[index],
+      body: IndexedStack(
+        index: _currentIndex,
+        children: _pages,
+      ),
 
       bottomNavigationBar: NavigationBar(
-        selectedIndex: index,
-        onDestinationSelected: (value) {
+        selectedIndex: _currentIndex,
+        height: 72,
+        labelBehavior:
+            NavigationDestinationLabelBehavior.alwaysShow,
+
+        onDestinationSelected: (index) {
           setState(() {
-            index = value;
+            _currentIndex = index;
           });
         },
+
         destinations: const [
 
           NavigationDestination(
@@ -45,13 +53,13 @@ class _MainNavigationState extends State<MainNavigation> {
           ),
 
           NavigationDestination(
-            icon: Icon(Icons.explore_outlined),
-            selectedIcon: Icon(Icons.explore),
+            icon: Icon(Icons.dynamic_feed_outlined),
+            selectedIcon: Icon(Icons.dynamic_feed),
             label: "Feed",
           ),
 
           NavigationDestination(
-            icon: Icon(Icons.mic_none),
+            icon: Icon(Icons.mic_none_outlined),
             selectedIcon: Icon(Icons.mic),
             label: "Rooms",
           ),

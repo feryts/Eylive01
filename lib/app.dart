@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'core/theme/app_theme.dart';
-import 'features/auth/screens/login_screen.dart';
+import 'features/home/screens/home_screen.dart';
 
 class EyLiveApp extends StatelessWidget {
   const EyLiveApp({super.key});
@@ -14,7 +14,7 @@ class EyLiveApp extends StatelessWidget {
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
       themeMode: ThemeMode.dark,
-      home: const LoginScreen(),
+      home: const HomeScreen(),
     );
   }
 }

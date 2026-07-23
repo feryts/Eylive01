@@ -13,7 +13,7 @@ class AuthService {
   |--------------------------------------------------------------------------
   */
 
-  Future<bool> login({
+  Future<void> login({
     required String phone,
     required String password,
   }) async {
@@ -31,11 +31,7 @@ class AuthService {
       data["token"],
     );
 
-    CurrentUser.instance.fromJson(
-      data["user"],
-    );
-
-    return true;
+    CurrentUser.instance.fromJson(data["user"]);
   }
 
   /*
@@ -44,7 +40,7 @@ class AuthService {
   |--------------------------------------------------------------------------
   */
 
-  Future<bool> register({
+  Future<void> register({
     required String username,
     required String phone,
     required String password,
@@ -65,14 +61,25 @@ class AuthService {
     final data = response.data["data"];
 
     await SessionManager.instance.saveToken(
-      data["token"],
+      data["token"]);
+
+    CurrentUser.instance.fromJson(data["user"]);
+  }
+
+  /*
+  |--------------------------------------------------------------------------
+  | Me
+  |--------------------------------------------------------------------------
+  */
+
+  Future<void> me() async {
+    final response = await ApiClient.instance.get(
+      "/auth/me",
     );
 
     CurrentUser.instance.fromJson(
-      data["user"],
+      response.data["data"],
     );
-
-    return true;
   }
 
   /*
@@ -84,9 +91,7 @@ class AuthService {
   Future<void> logout() async {
     try {
       await ApiClient.instance.post("/auth/logout");
-    } catch (_) {
-      // Sunucuya ulaşılamasa bile yerel oturumu temizle.
-    }
+    } catch (_) {}
 
     await SessionManager.instance.logout();
   }

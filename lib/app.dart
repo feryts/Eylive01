@@ -1,32 +1,20 @@
 import 'package:flutter/material.dart';
 
+import 'core/theme/app_theme.dart';
+import 'features/auth/screens/login_screen.dart';
+
 class EyLiveApp extends StatelessWidget {
   const EyLiveApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
       title: 'EyLive',
+      debugShowCheckedModeBanner: false,
+      theme: AppTheme.light,
+      darkTheme: AppTheme.dark,
       themeMode: ThemeMode.dark,
-      theme: ThemeData(
-        useMaterial3: true,
-      ),
-      darkTheme: ThemeData(
-        brightness: Brightness.dark,
-        useMaterial3: true,
-      ),
-      home: const Scaffold(
-        body: Center(
-          child: Text(
-            'EyLive',
-            style: TextStyle(
-              fontSize: 36,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-      ),
+      home: const LoginScreen(),
     );
   }
 }

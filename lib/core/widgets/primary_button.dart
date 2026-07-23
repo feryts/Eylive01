@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 
-import '../constants/app_colors.dart';
-import '../constants/app_text_style.dart';
-
 class PrimaryButton extends StatelessWidget {
-  final String title;
-
+  final String text;
   final VoidCallback onPressed;
+  final IconData? icon;
+  final bool loading;
 
   const PrimaryButton({
     super.key,
-    required this.title,
+    required this.text,
     required this.onPressed,
+    this.icon,
+    this.loading = false,
   });
 
   @override
@@ -19,18 +19,34 @@ class PrimaryButton extends StatelessWidget {
     return SizedBox(
       width: double.infinity,
       height: 56,
-      child: ElevatedButton(
-        onPressed: onPressed,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primary,
-          foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+      child: ElevatedButton.icon(
+        onPressed: loading ? null : onPressed,
+        icon: loading
+            ? const SizedBox(
+                width: 22,
+                height: 22,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: Colors.white,
+                ),
+              )
+            : Icon(icon ?? Icons.arrow_forward),
+
+        label: Text(
+          text,
+          style: const TextStyle(
+            fontSize: 17,
+            fontWeight: FontWeight.bold,
           ),
         ),
-        child: Text(
-          title,
-          style: AppTextStyle.button,
+
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color(0xff6C4DFF),
+          foregroundColor: Colors.white,
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(18),
+          ),
         ),
       ),
     );

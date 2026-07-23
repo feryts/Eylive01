@@ -2,10 +2,34 @@
 
 namespace App\Helpers;
 
+use App\Models\User;
+
 class EyHelper
 {
-    public static function generateEyId(int $id): string
+    /**
+     * Generate unique EyLive ID.
+     *
+     * Format:
+     * EY0000001
+     * EY0000002
+     */
+    public static function generateEyId(): string
     {
-        return 'EY'.str_pad($id, 7, '0', STR_PAD_LEFT);
+        do {
+
+            $lastId = User::max('id') + 1;
+
+            $eyId = 'EY' . str_pad(
+                $lastId,
+                7,
+                '0',
+                STR_PAD_LEFT
+            );
+
+        } while (
+            User::where('ey_id', $eyId)->exists()
+        );
+
+        return $eyId;
     }
 }

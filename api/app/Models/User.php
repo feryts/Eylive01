@@ -6,6 +6,7 @@ use App\Enums\UserRole;
 use App\Enums\UserStatus;
 use App\Enums\VipLevel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -13,7 +14,9 @@ use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens;
+    use HasFactory;
+    use Notifiable;
 
     /**
      * Mass assignable attributes.
@@ -25,17 +28,13 @@ class User extends Authenticatable
         'email',
         'password',
         'avatar',
-
         'gender',
         'country',
-
         'vip_level',
         'role',
         'status',
-
         'bio',
         'birthday',
-
         'phone_verified_at',
         'last_login_at',
     ];
@@ -55,12 +54,9 @@ class User extends Authenticatable
     {
         return [
             'password' => 'hashed',
-
             'birthday' => 'date',
-
             'phone_verified_at' => 'datetime',
             'last_login_at' => 'datetime',
-
             'role' => UserRole::class,
             'status' => UserStatus::class,
             'vip_level' => VipLevel::class,
@@ -78,20 +74,25 @@ class User extends Authenticatable
         return $this->hasOne(UserWallet::class);
     }
 
+    public function walletTransactions(): HasMany
+    {
+        return $this->hasMany(WalletTransaction::class);
+    }
+
     /*
     |--------------------------------------------------------------------------
     | Helper Methods
     |--------------------------------------------------------------------------
     */
 
-    public function isAdmin(): bool
-    {
-        return $this->role === UserRole::ADMIN;
-    }
-
     public function isSuperAdmin(): bool
     {
         return $this->role === UserRole::SUPER_ADMIN;
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->role === UserRole::ADMIN;
     }
 
     public function isBroadcaster(): bool

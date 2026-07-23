@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'core/theme/app_theme.dart';
-import 'shared/main_navigation.dart';
+import 'features/auth/screens/splash_screen.dart';
 
 class EyLiveApp extends StatelessWidget {
   const EyLiveApp({super.key});
@@ -11,12 +11,10 @@ class EyLiveApp extends StatelessWidget {
     return MaterialApp(
       title: 'EyLive',
       debugShowCheckedModeBanner: false,
-
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
       themeMode: ThemeMode.dark,
-
-      home: const MainNavigation(),
+      home: const SplashScreen(),
     );
   }
 }

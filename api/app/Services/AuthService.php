@@ -5,12 +5,18 @@ namespace App\Services;
 use App\Helpers\EyHelper;
 use App\Models\User;
 use App\Models\UserWallet;
+use App\Repositories\AuthRepository;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
 class AuthService
 {
+    public function __construct(
+        protected AuthRepository $repository
+    ) {
+    }
+
     /**
      * Register
      */
@@ -18,7 +24,7 @@ class AuthService
     {
         return DB::transaction(function () use ($data) {
 
-            $user = User::create([
+            $user = $this->repository->create([
                 'ey_id'    => EyHelper::generateEyId(),
                 'username' => $data['username'],
                 'phone'    => $data['phone'],
@@ -32,7 +38,7 @@ class AuthService
                 'user_id' => $user->id,
             ]);
 
-            $token = $user->createToken('mobile')->plainTextToken;
+            $token = $this->repository->createToken($user);
 
             return [
                 'user'  => $this->me($user),
@@ -46,19 +52,25 @@ class AuthService
      */
     public function login(array $data): array
     {
-        $user = User::where('phone', $data['phone'])->first();
+        $user = $this->repository->findByPhone($data['phone']);
 
         if (!$user || !Hash::check($data['password'], $user->password)) {
             throw ValidationException::withMessages([
-                'phone' => ['Telefon numarası veya şifre hatalı.'],
+                'phone' => [
+                    'Telefon numarası veya şifre hatalı.',
+                ],
             ]);
         }
 
-        $user->update([
+        // Eski tokenları temizle
+        $this->repository->deleteAllTokens($user);
+
+        // Son giriş zamanı
+        $this->repository->update($user, [
             'last_login_at' => now(),
         ]);
 
-        $token = $user->createToken('mobile')->plainTextToken;
+        $token = $this->repository->createToken($user);
 
         return [
             'user'  => $this->me($user),
@@ -71,7 +83,7 @@ class AuthService
      */
     public function me(User $user): array
     {
-        $user->loadMissing('wallet');
+        $user = $this->repository->load($user);
 
         return [
             'id' => $user->id,
@@ -87,15 +99,21 @@ class AuthService
             'status' => $user->status?->value,
             'vip_level' => $user->vip_level?->value,
 
-            'phone_verified' => !is_null($user->phone_verified_at),
+            'phone_verified' => $user->phone_verified_at !== null,
 
             'wallet' => [
                 'coins' => $user->wallet?->coins ?? 0,
                 'diamonds' => $user->wallet?->diamonds ?? 0,
             ],
 
-            // Permission sistemi eklenince burası doldurulacak.
-            'permissions' => [],
+            // Spatie eklendiğinde otomatik doldurulacak
+            'roles' => method_exists($user, 'getRoleNames')
+                ? $user->getRoleNames()->values()
+                : [],
+
+            'permissions' => method_exists($user, 'getAllPermissions')
+                ? $user->getAllPermissions()->pluck('name')->values()
+                : [],
         ];
     }
 
@@ -104,6 +122,6 @@ class AuthService
      */
     public function logout(User $user): void
     {
-        $user->currentAccessToken()?->delete();
+        $this->repository->deleteCurrentToken($user);
     }
 }

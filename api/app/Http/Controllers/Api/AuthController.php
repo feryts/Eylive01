@@ -23,11 +23,13 @@ class AuthController extends Controller
     public function register(RegisterRequest $request): JsonResponse
     {
         try {
-            $result = $this->authService->register($request->validated());
+            $result = $this->authService->register(
+                $request->validated()
+            );
 
             return response()->json([
                 'success' => true,
-                'message' => 'Kayıt başarılı.',
+                'message' => 'Registration successful.',
                 'data' => $result,
             ], 201);
 
@@ -37,6 +39,7 @@ class AuthController extends Controller
                 'success' => false,
                 'message' => $e->getMessage(),
             ], 500);
+
         }
     }
 
@@ -47,11 +50,13 @@ class AuthController extends Controller
     {
         try {
 
-            $result = $this->authService->login($request->validated());
+            $result = $this->authService->login(
+                $request->validated()
+            );
 
             return response()->json([
                 'success' => true,
-                'message' => 'Giriş başarılı.',
+                'message' => 'Login successful.',
                 'data' => $result,
             ]);
 
@@ -61,7 +66,21 @@ class AuthController extends Controller
                 'success' => false,
                 'message' => $e->getMessage(),
             ], 401);
+
         }
+    }
+
+    /**
+     * Current User
+     */
+    public function me(Request $request): JsonResponse
+    {
+        return response()->json([
+            'success' => true,
+            'data' => $this->authService->me(
+                $request->user()
+            ),
+        ]);
     }
 
     /**
@@ -69,11 +88,13 @@ class AuthController extends Controller
      */
     public function logout(Request $request): JsonResponse
     {
-        $this->authService->logout($request->user());
+        $this->authService->logout(
+            $request->user()
+        );
 
         return response()->json([
             'success' => true,
-            'message' => 'Çıkış başarılı.',
+            'message' => 'Logout successful.',
         ]);
     }
 }

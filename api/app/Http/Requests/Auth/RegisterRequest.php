@@ -11,25 +11,61 @@ class RegisterRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'phone' => preg_replace('/\s+/', '', (string) $this->phone),
+            'username' => trim((string) $this->username),
+        ]);
+    }
+
     public function rules(): array
     {
         return [
 
-            'username' => 'required|string|min:3|max:30|unique:users,username',
+            'username' => [
+                'bail',
+                'required',
+                'string',
+                'min:3',
+                'max:30',
+                'unique:users,username',
+            ],
 
-            'phone' => 'required|string|max:20|unique:users,phone',
+            'phone' => [
+                'bail',
+                'required',
+                'string',
+                'min:8',
+                'max:20',
+                'unique:users,phone',
+            ],
 
-            'password' => 'required|string|min:6',
+            'password' => [
+                'bail',
+                'required',
+                'string',
+                'min:8',
+                'confirmed',
+            ],
 
-            'first_name' => 'nullable|string|max:50',
+            'gender' => [
+                'required',
+                'in:male,female',
+            ],
 
-            'last_name' => 'nullable|string|max:50',
+            'country' => [
+                'required',
+                'string',
+                'max:100',
+            ],
 
-            'gender' => 'required|in:male,female',
-
-            'birth_date' => 'required|date',
-
-            'country' => 'required|string|max:100',
+            'email' => [
+                'nullable',
+                'email',
+                'max:255',
+                'unique:users,email',
+            ],
 
         ];
     }
@@ -39,16 +75,20 @@ class RegisterRequest extends FormRequest
         return [
 
             'username.required' => 'Kullanıcı adı zorunludur.',
+            'username.unique' => 'Bu kullanıcı adı kullanılmaktadır.',
 
             'phone.required' => 'Telefon numarası zorunludur.',
+            'phone.unique' => 'Bu telefon numarası kullanılmaktadır.',
 
             'password.required' => 'Şifre zorunludur.',
+            'password.confirmed' => 'Şifreler eşleşmiyor.',
+            'password.min' => 'Şifre en az 8 karakter olmalıdır.',
 
             'gender.required' => 'Cinsiyet seçiniz.',
 
-            'birth_date.required' => 'Doğum tarihi zorunludur.',
+            'country.required' => 'Ülke seçiniz.',
 
-            'country.required' => 'Ülke zorunludur.',
+            'email.unique' => 'Bu e-posta kullanılmaktadır.',
 
         ];
     }
